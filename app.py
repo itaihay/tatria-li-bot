@@ -18,6 +18,7 @@ bot.
 """
 
 import logging
+import os
 
 from pip._vendor import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -59,7 +60,8 @@ def register(update: Update, context: CallbackContext) -> None:
     query.answer()
 
     if query.data == '1':
-        context.job_queue.run_repeating(check, 120, context=update.effective_chat.id, name=str(update.effective_chat.id))
+        context.job_queue.run_repeating(check, 120, context=update.effective_chat.id,
+                                        name=str(update.effective_chat.id))
         query.edit_message_text(text='Registered! (/cancel to stop)')
 
 
@@ -75,10 +77,11 @@ def check(context: CallbackContext, **kw) -> None:
     if (p.status_code == 200) and (not "product-page-no-inventory" in str(p._content)):
         context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
 
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
     p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", headers=headers)
     if (p.status_code == 200) and (not ("מוצר / דף זה הוסר מאתרנו" in p._content.decode('utf-8'))):
-        context.bot.send_message(job.context, text= "IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
+        context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
 
 
 def cancel(update: Update, context: CallbackContext) -> None:
@@ -113,7 +116,12 @@ def main():
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    updater.start_polling()
+    # updater.start_polling()
+    PORT = int(os.environ.get('PORT', 5000))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path='1418644151:AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + '1418644151:AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
