@@ -120,8 +120,8 @@ def main():
     PORT = int(os.environ.get('PORT', 5000))
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
-                          url_path='1418644151:AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + '1418644151:AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+                          url_path='1418644151')
+    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + '1418644151')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
