@@ -72,17 +72,17 @@ def check(context: CallbackContext, **kw) -> None:
     p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/digital")
     if (p.status_code == 200) and (not "product-page-no-inventory" in str(p._content)):
         context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/digital')
-        logger.debug(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
     p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/blue/ray")
     if (p.status_code == 200) and (not "product-page-no-inventory" in str(p._content)):
         context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
-        logger.debug(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
     p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", allow_redirects=False, headers=headers)
-    if (p.status_code == 200) and (not ("דף זה הוסר מאתרנו" in p._content.decode('utf-8'))):
+    if (p.status_code == 200) and (not "דף לא נמצא".encode() in p.content):
         context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
         print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
