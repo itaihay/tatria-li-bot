@@ -80,7 +80,8 @@ def check(context: CallbackContext, **kw) -> None:
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
     p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", headers=headers)
-    if (p.status_code == 200) and (not ("מוצר / דף זה הוסר מאתרנו" in p._content.decode('utf-8'))):
+    b = b'\xd7\x9e\xd7\x95\xd7\xa6\xd7\xa8 / \xd7\x93\xd7\xa3 \xd7\x96\xd7\x94 \xd7\x94\xd7\x95\xd7\xa1\xd7\xa8 \xd7\x9e\xd7\x90\xd7\xaa\xd7\xa8\xd7\xa0\xd7\x95'
+    if (p.status_code == 200) and (not (b in p.content)):
         context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
 
 
