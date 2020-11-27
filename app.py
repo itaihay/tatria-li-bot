@@ -63,6 +63,8 @@ def register(update: Update, context: CallbackContext) -> None:
         context.job_queue.run_repeating(check, 30, context=update.effective_chat.id,
                                         name=str(update.effective_chat.id))
         query.edit_message_text(text='Registered! (/cancel to stop)')
+    else:
+        query.edit_message_text(text="Go buy an Xbox then...")
 
 
 def check(context: CallbackContext, **kw) -> None:
@@ -82,7 +84,7 @@ def check(context: CallbackContext, **kw) -> None:
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
     p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", allow_redirects=False, headers=headers)
-    if (p.status_code == 200) and (not "דף לא נמצא".encode() in p.content):
+    if (p.status_code == 200) and ("m-area-prd" in str(p.content)):
         context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
         print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
@@ -123,8 +125,8 @@ def main():
     PORT = int(os.environ.get('PORT', 5000))
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
-                          url_path='1418644151')
-    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + '1418644151')
+                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
