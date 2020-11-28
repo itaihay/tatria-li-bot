@@ -16,7 +16,7 @@ Basic Echobot example, repeats messages.
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
-
+import json
 import logging
 import os
 
@@ -62,6 +62,8 @@ def register(update: Update, context: CallbackContext) -> None:
     if query.data == '1':
         context.job_queue.run_repeating(check, 30, context=update.effective_chat.id,
                                         name=str(update.effective_chat.id))
+        context.job_queue.run_repeating(notify_user_still_looking, 7200, context=update.effective_chat.id,
+                                        name=str(update.effective_chat.id))
         query.edit_message_text(text='Registered! (/cancel to stop)')
     else:
         query.edit_message_text(text="Go buy an Xbox then...")
@@ -98,6 +100,9 @@ def cancel(update: Update, context: CallbackContext) -> None:
 
     update.message.reply_text("You won't know when a PS5 is out!")
 
+def notify_user_still_looking(context: CallbackContext):
+    context.bot.send_message(context.job.context, text="Didn't find a PS5 yet...")
+
 
 def main():
     """Start the bot."""
@@ -122,6 +127,11 @@ def main():
 
     # Start the Bot
     # updater.start_polling()
+
+    if os.path.exists('./ids.json'):
+        with open('./ids.json', 'r') as f:
+            ids = json.load(f)
+
     PORT = int(os.environ.get('PORT', 5000))
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
