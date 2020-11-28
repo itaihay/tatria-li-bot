@@ -68,6 +68,10 @@ def register(update: Update, context: CallbackContext) -> None:
         query.edit_message_text(text="Go buy an Xbox then...")
 
 
+def keep_app_alive(*a, **kw):
+    requests.get("https://ps5-alert-bot.herokuapp.com/")
+
+
 def register_to_telegram(update, id):
     update.job_queue.run_repeating(check, 30, context=id, name=str(id))
     update.job_queue.run_repeating(notify_user_still_looking, 7200, context=id, name=str(id))
@@ -133,7 +137,7 @@ def save_users_to_db(context: CallbackContext):
 
 def get_telegram_users(context):
     jobs = context.job_queue.jobs()
-    ids = {j.context for j in jobs}
+    ids = {j.context for j in jobs if j != 'KEEP_ALIVE'}
     return ids
 
 
@@ -161,6 +165,9 @@ def main():
 
     for id in get_db_users():
         register_to_telegram(updater, id)
+
+    updater.job_queue.run_repeating(keep_app_alive, 600, name="KEEP_ALIVE")
+
 
     # on noncommand i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
