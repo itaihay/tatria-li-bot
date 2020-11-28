@@ -16,10 +16,9 @@ Basic Echobot example, repeats messages.
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
-import json
 import logging
-import os
 
+import psycopg2
 from pip._vendor import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
@@ -31,7 +30,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-YES = 1
+PG_CONNECTION_STRING = 'postgres://qoylexgbjnwyir:281532ff341d44531ed6bfddaf729fe315de20fab2ad6409ef5a74554f747942@ec2-52-30-161-203.eu-west-1.compute.amazonaws.com:5432/djhv36l77a6tl'
 
 
 # Define a few command handlers. These usually take the two arguments update and
@@ -59,14 +58,17 @@ def register(update: Update, context: CallbackContext) -> None:
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
 
-    if query.data == '1':
-        context.job_queue.run_repeating(check, 30, context=update.effective_chat.id,
-                                        name=str(update.effective_chat.id))
-        context.job_queue.run_repeating(notify_user_still_looking, 7200, context=update.effective_chat.id,
-                                        name=str(update.effective_chat.id))
+    if query.data == '1' and (str(update.effective_chat.id) not in get_telegram_users(context)):
+        register_to_telegram(context, update.effective_chat.id)
         query.edit_message_text(text='Registered! (/cancel to stop)')
+        save_users_to_db(context)
     else:
         query.edit_message_text(text="Go buy an Xbox then...")
+
+
+def register_to_telegram(update, id):
+    update.job_queue.run_repeating(check, 30, context=id, name=str(id))
+    update.job_queue.run_repeating(notify_user_still_looking, 7200, context=id, name=str(id))
 
 
 def check(context: CallbackContext, **kw) -> None:
@@ -100,6 +102,40 @@ def cancel(update: Update, context: CallbackContext) -> None:
 
     update.message.reply_text("You won't know when a PS5 is out!")
 
+
+def get_db_users():
+    with psycopg2.connect(PG_CONNECTION_STRING) as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM USER_IDS")
+            rows = cur.fetchall()
+            return [row[0] for row in rows]
+
+        except Exception as e:
+            print(e)
+
+
+
+def save_users_to_db(context: CallbackContext):
+    with psycopg2.connect(PG_CONNECTION_STRING) as conn:
+        try:
+            ids = get_telegram_users(context)
+
+            cur = conn.cursor()
+            all_ids = ','.join([f'(\'{dbid}\')' for dbid in ids])
+            cur.execute(f"INSERT INTO USER_IDS VALUES {all_ids} ON CONFLICT DO NOTHING")
+            conn.commit()
+
+        except Exception as e:
+            print(e)
+
+
+def get_telegram_users(context):
+    jobs = context.job_queue.jobs()
+    ids = {j.context for j in jobs}
+    return ids
+
+
 def notify_user_still_looking(context: CallbackContext):
     context.bot.send_message(context.job.context, text="Didn't find a PS5 yet...")
 
@@ -122,21 +158,20 @@ def main():
     updater.dispatcher.add_handler(CallbackQueryHandler(register))
     updater.dispatcher.add_handler(CommandHandler('cancel', cancel))
 
+    for id in get_db_users():
+        register_to_telegram(updater, id)
+
     # on noncommand i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    # updater.start_polling()
+    updater.start_polling()
 
-    if os.path.exists('./ids.json'):
-        with open('./ids.json', 'r') as f:
-            ids = json.load(f)
-
-    PORT = int(os.environ.get('PORT', 5000))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    # PORT = int(os.environ.get('PORT', 5000))
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=int(PORT),
+    #                       url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    # updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
