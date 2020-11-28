@@ -58,8 +58,9 @@ def register(update: Update, context: CallbackContext) -> None:
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
 
-    if query.data == '1' and (str(update.effective_chat.id) not in get_telegram_users(context)):
-        register_to_telegram(context, update.effective_chat.id)
+    if query.data == '1':
+        if str(update.effective_chat.id) not in get_telegram_users(context):
+            register_to_telegram(context, update.effective_chat.id)
         query.edit_message_text(text='Registered! (/cancel to stop)')
         save_users_to_db(context)
     else:
