@@ -17,6 +17,7 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 import logging
+import os
 
 import psycopg2
 from pip._vendor import requests
@@ -116,7 +117,6 @@ def get_db_users():
             print(e)
 
 
-
 def save_users_to_db(context: CallbackContext):
     with psycopg2.connect(PG_CONNECTION_STRING) as conn:
         try:
@@ -166,13 +166,13 @@ def main():
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    updater.start_polling()
+    # updater.start_polling()
 
-    # PORT = int(os.environ.get('PORT', 5000))
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=int(PORT),
-    #                       url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    # updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    PORT = int(os.environ.get('PORT', 5000))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
