@@ -120,7 +120,8 @@ def cancel(update: Update, context: CallbackContext) -> None:
         for job in jobs:
             job.schedule_removal()
 
-    remove_db_user(str(update.message.chat_id))
+    if update.message.chat_id:
+        remove_db_user(str(update.message.chat_id))
 
     update.message.reply_text("You won't know when a PS5 is out!")
 
