@@ -17,7 +17,6 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 import logging
-import os
 
 import psycopg2
 from pip._vendor import requests
@@ -59,9 +58,11 @@ def register(update: Update, context: CallbackContext) -> None:
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
 
+    chat_id = update.effective_chat.id
+
     if query.data == '1':
-        if str(update.effective_chat.id) not in get_telegram_users(context):
-            register_to_telegram(context, update.effective_chat.id)
+        if chat_id and str(chat_id) not in get_telegram_users(context):
+            register_to_telegram(context, chat_id)
         query.edit_message_text(text='Registered! (/cancel to stop)')
         save_users_to_db(context)
     else:
@@ -111,6 +112,8 @@ def check(context: CallbackContext, **kw) -> None:
         print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
 
+
+
 def cancel(update: Update, context: CallbackContext) -> None:
     jobs = context.job_queue.get_jobs_by_name(str(update.message.chat_id))
 
@@ -118,8 +121,20 @@ def cancel(update: Update, context: CallbackContext) -> None:
         for job in jobs:
             job.schedule_removal()
 
+    remove_db_user(str(update.message.chat_id))
+
     update.message.reply_text("You won't know when a PS5 is out!")
 
+
+def remove_db_user(id):
+    with psycopg2.connect(PG_CONNECTION_STRING) as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute(f"DELETE FROM USER_IDS WHERE ID='{id}'")
+            conn.commit()
+
+        except Exception as e:
+            print(e)
 
 def get_db_users():
     with psycopg2.connect(PG_CONNECTION_STRING) as conn:
@@ -149,7 +164,7 @@ def save_users_to_db(context: CallbackContext):
 
 def get_telegram_users(context):
     jobs = context.job_queue.jobs()
-    ids = {j.context for j in jobs if j != 'KEEP_ALIVE'}
+    ids = {j.context for j in jobs if j != 'KEEP_ALIVE' and j.context}
     return ids
 
 
@@ -184,13 +199,13 @@ def main():
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    # updater.start_polling()
+    updater.start_polling()
 
-    PORT = int(os.environ.get('PORT', 5000))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    # PORT = int(os.environ.get('PORT', 5000))
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=int(PORT),
+    #                       url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    # updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
