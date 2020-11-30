@@ -199,13 +199,13 @@ def main():
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    updater.start_polling()
+    # updater.start_polling()
 
-    # PORT = int(os.environ.get('PORT', 5000))
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=int(PORT),
-    #                       url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    # updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    PORT = int(os.environ.get('PORT', 5000))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
