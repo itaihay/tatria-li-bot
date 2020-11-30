@@ -21,8 +21,8 @@ import os
 
 import psycopg2
 from pip._vendor import requests
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, Updater
 
 # Enable logging
 logging.basicConfig(
@@ -98,6 +98,18 @@ def check(context: CallbackContext, **kw) -> None:
         context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
         print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
+    url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9e%d7%9b%d7%99%d7%a8%d7%94/"
+    p = requests.get(url, allow_redirects=False, headers=headers)
+    if (p.status_code == 200) and ("single_add_to_cart_button" in str(p.content)):
+        context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
+        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
+    url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-digital-edition-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9c%d7%9c%d7%90-%d7%9b%d7%95%d7%a0%d7%9f-%d7%93%d7%99/"
+    p = requests.get(url, allow_redirects=False, headers=headers)
+    if (p.status_code == 200) and ("single_add_to_cart_button" in str(p.content)):
+        context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
+        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
 
 def cancel(update: Update, context: CallbackContext) -> None:
     jobs = context.job_queue.get_jobs_by_name(str(update.message.chat_id))
@@ -167,7 +179,6 @@ def main():
         register_to_telegram(updater, id)
 
     updater.job_queue.run_repeating(keep_app_alive, 600, name="KEEP_ALIVE")
-
 
     # on noncommand i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
