@@ -17,6 +17,7 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 import logging
+import os
 
 import psycopg2
 from pip._vendor import requests
@@ -112,8 +113,6 @@ def check(context: CallbackContext, **kw) -> None:
         print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
 
-
-
 def cancel(update: Update, context: CallbackContext) -> None:
     jobs = context.job_queue.get_jobs_by_name(str(update.message.chat_id))
 
@@ -135,6 +134,7 @@ def remove_db_user(id):
 
         except Exception as e:
             print(e)
+
 
 def get_db_users():
     with psycopg2.connect(PG_CONNECTION_STRING) as conn:
