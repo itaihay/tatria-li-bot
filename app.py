@@ -80,37 +80,42 @@ def register_to_telegram(update, id):
 
 
 def check(context: CallbackContext, **kw) -> None:
-    """Echo the user message."""
-    job = context.job
+    try:
+        """Echo the user message."""
+        job = context.job
 
-    p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/digital")
-    if (p.status_code == 200) and (not "product-page-no-inventory" in str(p._content)):
-        context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/digital')
-        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/digital", timeout=10)
+        if not "product-page-no-inventory" in str(p._content):
+            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/digital')
+            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-    p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/blue/ray")
-    if (p.status_code == 200) and (not "product-page-no-inventory" in str(p._content)):
-        context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
-        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/blue/ray", timeout=10)
+        if not "product-page-no-inventory" in str(p._content):
+            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
+            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", allow_redirects=False, headers=headers)
-    if (p.status_code == 200) and ("m-area-prd" in str(p.content)):
-        context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
-        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", allow_redirects=False, headers=headers,
+                         timeout=10)
+        if "m-area-prd" in str(p.content):
+            context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
+            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-    url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9e%d7%9b%d7%99%d7%a8%d7%94/"
-    p = requests.get(url, allow_redirects=False, headers=headers)
-    if (p.status_code == 200) and ("single_add_to_cart_button" in str(p.content)):
-        context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
-        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9e%d7%9b%d7%99%d7%a8%d7%94/"
+        p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
+        if "single_add_to_cart_button" in str(p.content):
+            context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
+            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-    url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-digital-edition-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9c%d7%9c%d7%90-%d7%9b%d7%95%d7%a0%d7%9f-%d7%93%d7%99/"
-    p = requests.get(url, allow_redirects=False, headers=headers)
-    if (p.status_code == 200) and ("single_add_to_cart_button" in str(p.content)):
-        context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
-        print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-digital-edition-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9c%d7%9c%d7%90-%d7%9b%d7%95%d7%a0%d7%9f-%d7%93%d7%99/"
+        p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
+        if "single_add_to_cart_button" in str(p.content):
+            context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
+            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
+    except Exception as e:
+        print(e)
 
 
 def cancel(update: Update, context: CallbackContext) -> None:
