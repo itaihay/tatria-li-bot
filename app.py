@@ -76,7 +76,7 @@ def keep_app_alive(*a, **kw):
 
 def register_to_telegram(update, id):
     update.job_queue.run_repeating(check, 30, context=id, name=str(id))
-    update.job_queue.run_repeating(notify_user_still_looking, 7200, context=id, name=str(id))
+    update.job_queue.run_repeating(notify_user_still_looking, 3600, context=id, name=str(id))
 
 
 def check(context: CallbackContext, **kw) -> None:
@@ -175,7 +175,7 @@ def get_telegram_users(context):
 
 
 def notify_user_still_looking(context: CallbackContext):
-    context.bot.send_message(context.job.context, text="Didn't find a PS5 yet...")
+    context.bot.send_message(context.job.context, text="Didn't find a PS5 yet...", disable_notification=True)
 
 
 def main():
