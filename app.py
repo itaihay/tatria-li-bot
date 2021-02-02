@@ -31,7 +31,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-PG_CONNECTION_STRING = 'postgres://qoylexgbjnwyir:281532ff341d44531ed6bfddaf729fe315de20fab2ad6409ef5a74554f747942@ec2-52-30-161-203.eu-west-1.compute.amazonaws.com:5432/djhv36l77a6tl'
+PG_CONNECTION_STRING = os.environ['POSTGRES_CONNECTION_STRING']
+HEROKU_URL_BASE = os.environ['HEROKU_URL_BASE']
+HEROKU_APP_ID = os.environ['HEROKU_APP_ID']
+TELEGRAM_ID = os.environ['TELEGRAM_ID']
 
 
 # Define a few command handlers. These usually take the two arguments update and
@@ -183,7 +186,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater("1418644151:AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U", use_context=True)
+    updater = Updater(TELEGRAM_ID, use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -210,8 +213,8 @@ def main():
     PORT = int(os.environ.get('PORT', 5000))
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
-                          url_path='AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
-    updater.bot.setWebhook('https://ps5-alert-bot.herokuapp.com/' + 'AAGdaaRuZinX98D13u3uoyke6KVRvg0lh0U')
+                          url_path=HEROKU_APP_ID)
+    updater.bot.setWebhook(f'https://{HEROKU_URL_BASE}.herokuapp.com/' + HEROKU_APP_ID)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
