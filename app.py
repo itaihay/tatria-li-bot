@@ -20,6 +20,7 @@ import logging
 import os
 
 import psycopg2
+from bs4 import BeautifulSoup
 from pip._vendor import requests
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, Updater
@@ -87,15 +88,26 @@ def check(context: CallbackContext, **kw) -> None:
         """Echo the user message."""
         job = context.job
 
-        p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/digital", timeout=10)
-        if not "product-page-no-inventory" in str(p._content):
-            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/digital')
+        # p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/digital", timeout=10)
+        # if not "product-page-no-inventory" in str(p._content):
+        #     context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/digital')
+        #     print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+        #
+        # p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/blue/ray", timeout=10)
+        # if not "product-page-no-inventory" in str(p._content):
+        #     context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
+        #     print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
+        p = requests.get("https://www.bug.co.il/consoles/?filter=,71270_76834_108,95454_86982_108,", timeout=10)
+        soup = BeautifulSoup(str(p.content), 'html.parser')
+
+        if (soup.select('#header') and
+            (len(soup.select('#category-page-products-preview-container > div.products-cubes-container')) > 0) or
+                len(soup.select('#category-page-products-preview-container')) == 0):
+
+            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/consoles/?filter=,71270_76834_108,95454_86982_108')
             print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-        p = requests.get("https://www.bug.co.il/brand/ps5/ps5/console/blue/ray", timeout=10)
-        if not "product-page-no-inventory" in str(p._content):
-            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/brand/ps5/ps5/console/blue/ray')
-            print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
