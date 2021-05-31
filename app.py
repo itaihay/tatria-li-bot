@@ -140,10 +140,9 @@ def check(context: CallbackContext, **kw) -> None:
             'MHP43LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 2TB - Space Gray',
             'MHP23LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 1TB - Silver',
             'MHP53LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 2TB - Silver',
-            'MHN13LL/A': '11-inch iPad Pro Wi-Fi + Cellular 1TB - Silver',
             }
 
-        url = 'https://www.apple.com/shop/fulfillment-messages?pl=true&mt=compact&parts.0=MHP13LL/A&parts.1=MHP23LL/A&parts.2=MHP43LL/A&parts.3=MHP53LL/A&parts.4=MHN13LL/A&location=Mercer%20Island,%20WA'
+        url = 'https://www.apple.com/shop/fulfillment-messages?pl=true&mt=compact&parts.0=MHP13LL/A&parts.1=MHP23LL/A&parts.2=MHP43LL/A&parts.3=MHP53LL/A&location=Mercer%20Island,%20WA'
         p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
         answer = json.loads(p.content)
         minimum_distance = 100
