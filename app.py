@@ -51,7 +51,7 @@ def start(update: Update, context: CallbackContext) -> None:
         ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Do you want a PS5?!',
+    update.message.reply_text('Do you want me to lehatria you?!',
                               reply_markup=reply_markup)
 
 
@@ -72,11 +72,11 @@ def register(update: Update, context: CallbackContext) -> None:
         query.edit_message_text(text='Registered! (/cancel to stop)')
         save_users_to_db(context)
     else:
-        query.edit_message_text(text="Go buy an Xbox then...")
+        query.edit_message_text(text="OK... Not offended or anything")
 
 
 def keep_app_alive(*a, **kw):
-    requests.get("https://ps5-alert-bot.herokuapp.com/")
+    requests.get(f'https://{HEROKU_URL_BASE}.herokuapp.com/')
 
 
 def register_to_telegram(update, id):
@@ -172,7 +172,7 @@ def cancel(update: Update, context: CallbackContext) -> None:
     if update.message.chat_id:
         remove_db_user(str(update.message.chat_id))
 
-    update.message.reply_text("You won't know when a PS5 is out!")
+    update.message.reply_text("I won't lehatria you!")
 
 
 def remove_db_user(id):
@@ -219,7 +219,7 @@ def get_telegram_users(context):
 
 
 def notify_user_still_looking(context: CallbackContext):
-    context.bot.send_message(context.job.context, text="Didn't find a PS5 yet...", disable_notification=True)
+    context.bot.send_message(context.job.context, text="Still trying to find stuff...", disable_notification=True)
 
 
 def main():
