@@ -16,6 +16,7 @@ Basic Echobot example, repeats messages.
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
+import json
 import logging
 import os
 
@@ -28,7 +29,7 @@ from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, 
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +47,8 @@ def start(update: Update, context: CallbackContext) -> None:
         [
             InlineKeyboardButton("Yes", callback_data='1'),
             InlineKeyboardButton("No", callback_data='2'),
+            ]
         ]
-    ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Do you want a PS5?!',
@@ -102,32 +103,60 @@ def check(context: CallbackContext, **kw) -> None:
         soup = BeautifulSoup(str(p.content), 'html.parser')
 
         if (soup.select('#header') and
-            (len(soup.select('#category-page-products-preview-container > div.products-cubes-container')) > 0) or
+                (len(soup.select('#category-page-products-preview-container > div.products-cubes-container')) > 0) or
                 len(soup.select('#category-page-products-preview-container')) == 0):
 
-            context.bot.send_message(job.context, text='BUG! https://www.bug.co.il/consoles/?filter=,71270_76834_108,95454_86982_108')
+            context.bot.send_message(job.context,
+                                     text='BUG! https://www.bug.co.il/consoles/?filter=,71270_76834_108,'
+                                          '95454_86982_108')
             print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/50.0.2661.102 Safari/537.36'}
         p = requests.get("https://www.ivory.co.il/Sony_Playstation_5.html", allow_redirects=False, headers=headers,
                          timeout=10)
         if "m-area-prd" in str(p.content):
             context.bot.send_message(job.context, text="IVORYYY  https://www.ivory.co.il/Sony_Playstation_5.html")
             print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9e%d7%9b%d7%99%d7%a8%d7%94/"
+        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa" \
+              "-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9e%d7%9b%d7%99%d7%a8%d7%94/"
         p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
         if "single_add_to_cart_button" in str(p.content):
             context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
             print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-digital-edition-%d7%a7%d7%95%d7%a0%d7%a1%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9c%d7%9c%d7%90-%d7%9b%d7%95%d7%a0%d7%9f-%d7%93%d7%99/"
+        url = "https://vgs.co.il/%D7%9E%D7%95%D7%A6%D7%A8/sony-ps5-console-digital-edition-%d7%a7%d7%95%d7%a0%d7%a1" \
+              "%d7%95%d7%9c%d7%aa-%d7%a4%d7%9c%d7%99%d7%99%d7%a1%d7%98%d7%99%d7%99%d7%a9%d7%9f-5-%d7%9c%d7%9c%d7%90" \
+              "-%d7%9b%d7%95%d7%a0%d7%9f-%d7%93%d7%99/"
         p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
         if "single_add_to_cart_button" in str(p.content):
             context.bot.send_message(job.context, text=f"VGSSSSS  {url}")
             print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
+        models = {
+            'MHP13LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 1TB - Space Gray',
+            'MHP43LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 2TB - Space Gray',
+            'MHP23LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 1TB - Silver',
+            'MHP53LL/A': '12.9-inch iPad Pro Wi-Fi + Cellular 2TB - Silver',
+            'MHN13LL/A': '11-inch iPad Pro Wi-Fi + Cellular 1TB - Silver',
+            }
+
+        url = 'https://www.apple.com/shop/fulfillment-messages?pl=true&mt=compact&parts.0=MHP13LL/A&parts.1=MHP23LL/A&parts.2=MHP43LL/A&parts.3=MHP53LL/A&parts.4=MHN13LL/A&location=Mercer%20Island,%20WA'
+        p = requests.get(url, allow_redirects=False, headers=headers, timeout=10)
+        answer = json.loads(p.content)
+        minimum_distance = 100
+
+        for store in answer['body']['content']['pickupMessage']['stores']:
+            for ipad_model in models:
+                if (store['partsAvailability'][ipad_model]['storeSelectionEnabled']
+                        and store['storedistance'] < minimum_distance):
+                    context.bot.send_message(job.context, text=f"{models[ipad_model]} - {store['storeName']}, {store['storeDistanceVoText']}")
+                    print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
+
+
+
 
     except Exception as e:
         print(e)
