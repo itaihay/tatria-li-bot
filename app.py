@@ -154,9 +154,6 @@ def check(context: CallbackContext, **kw) -> None:
                     context.bot.send_message(job.context, text=f"{models[ipad_model]} - {store['storeName']}, {store['storeDistanceVoText']}")
                     print(f'Status Code: {p.status_code}, URL: {p.url}, Is Redirect: {p.is_redirect}')
 
-
-
-
     except Exception as e:
         print(e)
 
